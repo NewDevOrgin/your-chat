@@ -3,9 +3,15 @@ from nicegui import ui
 import asyncio
 import ast
 import datetime as dt
+import random
 
 messages_ = []
 to_send = ""
+user = ""
+
+with ui.header():
+    ui.label("Your-Chat")
+    ui.input("username").bind_value(globals(), user)
 
 async def get_messages():
     global messages_
@@ -15,16 +21,19 @@ async def get_messages():
         messages_ = (ast.literal_eval(messages))
 
 async def send():
-    global to_send
+    global to_send, user
     async with connect("ws://localhost:8765") as websocket:
-        await websocket.send(str({"body": to_send, "stamp": f"{dt.datetime.now().hour}:{dt.datetime.now().minute}"}))
+        await websocket.send(str({"body": to_send, "user": user, "stamp": f"{dt.datetime.now().hour}:{dt.datetime.now().minute}"}))
 
 @ui.refreshable
 def chat_display():
     global messages_
     for message in messages_:
         if message != "[]":
-            ui.chat_message(message["body"], stamp=message["stamp"])
+            if message["user"]:
+                ui.chat_message(message["body"], name=message["user"], stamp=message["stamp"])
+            else:
+                ui.chat_message(message["body"], name="", stamp=message["stamp"])
 
 async def loop():
     await get_messages()
