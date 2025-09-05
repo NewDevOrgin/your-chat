@@ -30,9 +30,9 @@ def chat_display():
     global messages_
     for message in messages_:
         if message != "[]":
-            if message["user"]:
+            try:
                 ui.chat_message(message["body"], name=message["user"], stamp=message["stamp"])
-            else:
+            except:
                 ui.chat_message(message["body"], name="", stamp=message["stamp"])
 
 async def loop():
