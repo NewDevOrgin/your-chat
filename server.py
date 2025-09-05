@@ -1,9 +1,11 @@
 import asyncio
 import ast
+import os
 from websockets.asyncio.server import serve
 from tinydb import TinyDB, Query
 
 messages = TinyDB('messages.json')
+PORT = int(os.environ.get("PORT", 8765))
 
 async def chatG(websocket):
     global messages
@@ -24,7 +26,7 @@ async def chat(websocket):
     )
 
 async def main():
-    async with serve(chat, "localhost", 8765) as server:
+    async with serve(chat, "localhost", PORT) as server:
         await server.serve_forever()
 
 if __name__ == "__main__":
